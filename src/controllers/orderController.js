@@ -26,6 +26,9 @@ exports.placeOrder = async (req, res) => {
             };
         });
 
+        /* =========================
+           SAVE ORDER FIRST
+        ========================= */
         const order = await Order.create({
             user: req.user._id,
             items: orderItems,
@@ -34,31 +37,36 @@ exports.placeOrder = async (req, res) => {
             paymentMethod,
         });
 
-        /* ===========================
-           SEND EMAIL
-        =========================== */
-        try {
-            await sendOrderEmail(order);
-        } catch (emailError) {
-            console.log("Email failed but order saved:", emailError.message);
-        }
-
-        /* ===========================
+        /* =========================
            GENERATE WHATSAPP LINK
-        =========================== */
+        ========================= */
         const whatsappURL = generateWhatsAppLink(order);
 
+        /* =========================
+           RESPOND IMMEDIATELY
+        ========================= */
         res.status(201).json({
             message: "Order placed successfully",
             order,
             whatsappURL,
         });
 
+        /* =========================
+           EMAIL SEND AFTER RESPONSE
+           (BACKGROUND TASK)
+        ========================= */
+        setTimeout(() => {
+            sendOrderEmail(order)
+                .then(() => console.log("Email sent"))
+                .catch(err => console.log("Email error:", err.message));
+        }, 2000);
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: error.message });
     }
 };
+
 
 
 /* =====================================================
