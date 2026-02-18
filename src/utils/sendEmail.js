@@ -1,65 +1,62 @@
 const nodemailer = require("nodemailer");
 
-/* =====================================================
-   CREATE TRANSPORTER ONCE (IMPORTANT FOR SPEED)
-===================================================== */
+// CREATE TRANSPORTER ONCE
 const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
     },
-
-    // performance + reliability
-    connectionTimeout: 5000,
-    greetingTimeout: 5000,
-    socketTimeout: 5000,
-
     pool: true,
     maxConnections: 5,
     maxMessages: 100,
+    connectionTimeout: 8000,
+    greetingTimeout: 8000,
+    socketTimeout: 10000,
 });
 
+// VERIFY CONNECTION WHEN SERVER STARTS
+transporter.verify((error, success) => {
+    if (error) {
+        console.log("❌ Email transporter error:", error.message);
+    } else {
+        console.log("✅ Email transporter ready");
+    }
+});
 
-/* =====================================================
-   SEND ORDER EMAIL FUNCTION
-===================================================== */
 exports.sendOrderEmail = async (order) => {
     try {
         const itemsText = order.items
-            .map(
-                (item) =>
-                    `${item.name} (x${item.quantity}) - ₹${item.price * item.quantity}`
-            )
+            .map((item) => `${item.name} (x${item.quantity}) - ₹${item.price * item.quantity}`)
             .join("\n");
 
-        const mailOptions = {
-            from: process.env.EMAIL_USER,
+        await transporter.sendMail({
+            from: `"Anik Design Orders" <${process.env.EMAIL_USER}>`,
             to: process.env.EMAIL_USER,
-            subject: "New Order - Anik Design",
+            subject: `🛍️ New Order - ₹${order.totalAmount}`,
             text: `
-New Order Received
+NEW ORDER RECEIVED
+==================
 
 Customer Details:
-Name: ${order.shippingDetails.fullName}
-Phone: ${order.shippingDetails.phone}
-Address: ${order.shippingDetails.address}
-City: ${order.shippingDetails.city}
-Pincode: ${order.shippingDetails.pincode}
+Name     : ${order.shippingDetails.fullName}
+Phone    : ${order.shippingDetails.phone}
+Address  : ${order.shippingDetails.address}
+City     : ${order.shippingDetails.city}
+Pincode  : ${order.shippingDetails.pincode}
 
-Items:
+Items Ordered:
 ${itemsText}
 
-Total Amount: ₹${order.totalAmount}
+Total Amount  : ₹${order.totalAmount}
 Payment Method: ${order.paymentMethod}
+Order ID      : ${order._id}
             `,
-        };
+        });
 
-        await transporter.sendMail(mailOptions);
-
-        console.log("✅ Order email sent");
+        console.log("✅ Order email sent for order:", order._id);
 
     } catch (error) {
-        console.log("❌ Email failed:", error.message);
+        console.log("❌ Email failed for order:", order._id, "| Reason:", error.message);
     }
 };
