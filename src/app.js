@@ -11,9 +11,7 @@ const allowedOrigins = [
     "http://localhost:5173",
     "https://anik-designs.vercel.app",
     "https://www.anikdesign.in",
-    "https://www.anikdesign.in/",
-    "https://anikdesign.in",
-    "https://anikdesign.in/"
+    "https://anikdesign.in"
 ];
 
 app.use(
@@ -22,20 +20,20 @@ app.use(
             if (!origin) return callback(null, true);
 
             if (allowedOrigins.includes(origin)) {
-                callback(null, true);
-            } else if (origin && origin.match(/\.vercel\.app$/)) {
-                callback(null, true);
-            } else {
-                callback(new Error("Not allowed by CORS"));
+                return callback(null, true);
             }
+
+            if (origin && origin.match(/\.vercel\.app$/)) {
+                return callback(null, true);
+            }
+
+            return callback(null, true);
         },
         credentials: true,
         methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Authorization"],
     })
 );
-
-app.options("/*", cors());
 
 app.use(express.json());
 
