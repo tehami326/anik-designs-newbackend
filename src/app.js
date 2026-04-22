@@ -1,10 +1,9 @@
 import express from "express";
 import cors from "cors";
 
-import adminRoutes from "./routes/admin.routes.js";
-import productRoutes from "./routes/product.routes.js";
-import orderRoutes from "./routes/order.routes.js";
-import cloudinaryRoutes from "./routes/cloudinary.routes.js";
+import adminRoutes from "./routes/adminRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
 
 const app = express();
 
@@ -43,7 +42,6 @@ app.use(express.json());
 app.use("/api/admin", adminRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
-app.use("/api/cloudinary", cloudinaryRoutes);
 
 app.use((req, res) => {
     res.status(404).json({ message: "Route not found" });
