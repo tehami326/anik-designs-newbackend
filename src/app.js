@@ -1,9 +1,9 @@
-import express from "express";
-import cors from "cors";
+const express = require("express");
+const cors = require("cors");
 
-import adminRoutes from "./routes/adminRoutes.js";
-import productRoutes from "./routes/productRoutes.js";
-import orderRoutes from "./routes/orderRoutes.js";
+const adminRoutes = require("./routes/adminRoutes");
+const productRoutes = require("./routes/productRoutes");
+const orderRoutes = require("./routes/orderRoutes");
 
 const app = express();
 
@@ -23,7 +23,7 @@ app.use(
 
             if (allowedOrigins.includes(origin)) {
                 callback(null, true);
-            } else if (origin.match(/\.vercel\.app$/)) {
+            } else if (origin && origin.match(/\.vercel\.app$/)) {
                 callback(null, true);
             } else {
                 callback(new Error("Not allowed by CORS"));
@@ -54,4 +54,4 @@ app.use((err, req, res, next) => {
     });
 });
 
-export default app;
+module.exports = app;
