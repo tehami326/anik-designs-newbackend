@@ -23,12 +23,21 @@ const productSchema = new mongoose.Schema(
                 "curtains",
                 "quilts",
                 "wall-hangings",
+                "garments",          
             ],
             required: true,
         },
         image: {
             type: String,
-            required: true,
+            default: "",             
+        },
+        images: {
+            type: [String],          
+            default: [],
+        },
+        sizes: {
+            type: [String],          
+            default: [],
         },
         stock: {
             type: Number,
