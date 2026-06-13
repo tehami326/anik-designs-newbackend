@@ -9,6 +9,10 @@ const orderItemSchema = new mongoose.Schema({
     name: String,
     price: Number,
     quantity: Number,
+    selectedSize: {
+        type: String,
+        default: "",   
+    },
 });
 
 const orderSchema = new mongoose.Schema(
@@ -19,12 +23,10 @@ const orderSchema = new mongoose.Schema(
             required: true,
         },
         items: [orderItemSchema],
-
         totalAmount: {
             type: Number,
             required: true,
         },
-
         shippingDetails: {
             fullName: String,
             phone: String,
@@ -32,13 +34,11 @@ const orderSchema = new mongoose.Schema(
             city: String,
             pincode: String,
         },
-
         paymentMethod: {
             type: String,
             enum: ["COD", "PAY_LATER"],
             required: true,
         },
-
         status: {
             type: String,
             default: "Pending",
