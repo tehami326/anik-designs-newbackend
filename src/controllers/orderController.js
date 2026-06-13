@@ -13,14 +13,15 @@ exports.placeOrder = async (req, res) => {
         let totalAmount = 0;
 
         const orderItems = items.map((item) => {
-            totalAmount += item.price * item.quantity;
-            return {
-                product: item._id,
-                name: item.name,
-                price: item.price,
-                quantity: item.quantity,
-            };
-        });
+    totalAmount += item.price * item.quantity;
+    return {
+        product: item._id,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        selectedSize: item.selectedSize || "",  
+    };
+});
 
         // SAVE ORDER FIRST
         const order = await Order.create({
